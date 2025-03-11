@@ -26,5 +26,5 @@ A simple and efficient Todo web application with a **Flask** backend, a **MongoD
 
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/yourusername/todo-app.git
-cd todo-app
+git clone https://github.com/vishweshvpagi/todo.git
+cd todo
