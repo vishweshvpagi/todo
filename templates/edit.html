@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Task</title>
+    <link rel="stylesheet" href="../static/styles.css">
+<style>
+    .checkbox-group {
+      margin: 15px 0;
+    }
+    
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    
+    .checkbox-input {
+      margin-right: 8px;
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary-color);
+    }
+    
+    .checkbox-text {
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    
+    /* For better touch targets on mobile */
+    @media (max-width: 768px) {
+      .checkbox-label {
+        padding: 5px 0;
+      }
+      
+      .checkbox-input {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header"><h2>Edit Task</h2></div>
+    <div class="form-container"><form action="/edit/{{ task._id }}" method="POST">
+        <label>Task Name:</label>
+        <input type="text" name="task" value="{{ task.task }}" required>
+
+        <label>Priority:</label>
+        <select name="priority">
+            <option value="High" {% if task.priority == 'High' %}selected{% endif %}>High</option>
+            <option value="Medium" {% if task.priority == 'Medium' %}selected{% endif %}>Medium</option>
+            <option value="Low" {% if task.priority == 'Low' %}selected{% endif %}>Low</option>
+        </select>
+
+        <label>Due Date:</label>
+        <input type="date" name="due_date" value="{{ task.due_date }}" required>
+
+        <label>Description:</label>
+        <textarea name="description" rows="3" placeholder="Enter task details">{{ task.description }}</textarea>
+
+        <div class="checkbox-group">
+            <label for="completed-checkbox" class="checkbox-label">
+              <input type="checkbox" id="completed-checkbox" name="completed" class="checkbox-input" {% if task.completed %}checked{% endif %}>
+              <span class="checkbox-text">Mark as Completed</span>
+            </label>
+          </div>
+        <button type="submit">Update Task</button>
+    </form></div>
+
+    <a href="/">Cancel</a></div>
+</body>
+</html>

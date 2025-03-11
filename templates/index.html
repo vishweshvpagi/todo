@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Master - Smart To-Do List</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary: #4a6fa5;
+        --primary-dark: #3a5a8c;
+        --secondary: #6c757d;
+        --success: #28a745;
+        --danger: #dc3545;
+        --warning: #ffc107;
+        --light: #f8f9fa;
+        --dark: #343a40;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --radius: 8px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f5f7fa;
+        color: #333;
+        line-height: 1.6;
+        padding-bottom: 2rem;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
+
+      header {
+        background-color: var(--primary);
+        color: white;
+        padding: 1rem 0;
+        box-shadow: var(--shadow);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .app-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .app-title h1 {
+        font-size: 1.5rem;
+        margin: 0;
+      }
+
+      .user-menu {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .logout-btn {
+        background-color: transparent;
+        color: white;
+        border: 1px solid white;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius);
+        text-decoration: none;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .logout-btn:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .settings-btn {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.2rem;
+        cursor: pointer;
+      }
+
+      main {
+        padding: 2rem 0;
+      }
+
+      .card {
+        background-color: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .card-title {
+        margin-bottom: 1rem;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .form-group {
+        flex: 1;
+        min-width: 200px;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: var(--radius);
+        font-size: 1rem;
+      }
+
+      textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+      }
+
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: var(--radius);
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn-primary {
+        background-color: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background-color: var(--primary-dark);
+      }
+
+      .btn-success {
+        background-color: var(--success);
+        color: white;
+      }
+
+      .btn-danger {
+        background-color: var(--danger);
+        color: white;
+      }
+
+      .btn-warning {
+        background-color: var(--warning);
+        color: var(--dark);
+      }
+
+      .btn-sm {
+        padding: 0.4rem 0.7rem;
+        font-size: 0.875rem;
+      }
+
+      .filter-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .tab {
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius);
+        text-decoration: none;
+        color: var(--secondary);
+        background-color: #e9ecef;
+        transition: all 0.3s;
+      }
+
+      .tab:hover,
+      .tab.active {
+        background-color: var(--primary);
+        color: white;
+      }
+
+      .search-box {
+        position: relative;
+        margin-bottom: 1.5rem;
+      }
+
+      .search-box input {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        border: 1px solid #ddd;
+        border-radius: var(--radius);
+        font-size: 1rem;
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--secondary);
+      }
+
+      .sort-controls {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 1rem;
+      }
+
+      .task-list {
+        list-style: none;
+      }
+
+      .task-item {
+        background-color: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        margin-bottom: 1rem;
+        overflow: hidden;
+        transition: transform 0.3s;
+      }
+
+      .task-item:hover {
+        transform: translateY(-2px);
+      }
+
+      .task-content {
+        padding: 1rem;
+      }
+
+      .task-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.5rem;
+      }
+
+      .task-title {
+        margin: 0;
+        font-size: 1.2rem;
+        word-break: break-word;
+      }
+
+      .task-date {
+        font-size: 0.85rem;
+        color: var (--secondary);
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+
+      .priority-badge {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        margin-right: 0.5rem;
+      }
+
+      .priority-high {
+        background-color: #ffebee;
+        color: var(--danger);
+      }
+
+      .priority-medium {
+        background-color: #fff8e1;
+        color: #ff9800;
+      }
+
+      .priority-low {
+        background-color: #e8f5e9;
+        color: var(--success);
+      }
+
+      .task-description {
+        margin-top: 0.5rem;
+        font-size: 0.95rem;
+        color: #555;
+      }
+
+      .task-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+
+      .task-status {
+        height: 0.5rem;
+        width: 100%;
+      }
+
+      .task-status.completed {
+        background-color: var(--success);
+      }
+
+      .task-status.pending {
+        background-color: var(--warning);
+      }
+
+      .task-status.overdue {
+        background-color: var(--danger);
+      }
+
+      .completed-text {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        color: var(--success);
+        font-weight: 600;
+      }
+
+      .overdue-text {
+        color: var(--danger);
+        font-weight: 600;
+      }
+
+      .stats-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        flex: 1;
+        min-width: 200px;
+        background-color: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 1.5rem;
+        text-align: center;
+      }
+
+      .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--primary);
+      }
+
+      .stat-label {
+        color: var(--secondary);
+        font-size: 0.9rem;
+      }
+
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+      }
+
+      .tag {
+        background-color: #e9ecef;
+        color: var(--secondary);
+        padding: 0.2rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+      }
+
+      /* Mobile optimizations */
+      @media (max-width: 768px) {
+        .header-content {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1rem;
+        }
+
+        .user-menu {
+          width: 100%;
+          justify-content: space-between;
+        }
+
+        .form-group {
+          flex: 100%;
+        }
+
+        .task-header {
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+      }
+
+      /* Dark mode */
+      .dark-mode {
+        background-color: #1a1a1a;
+        color: #f5f5f5;
+      }
+
+      .dark-mode .card,
+      .dark-mode .task-item {
+        background-color: #2a2a2a;
+        color: #f5f5f5;
+      }
+
+      .dark-mode .form-control {
+        background-color: #333;
+        color: #f5f5f5;
+        border-color: #444;
+      }
+
+      .dark-mode .task-description {
+        color: #bbb;
+      }
+
+      .dark-mode .tab {
+        background-color: #333;
+        color: #ccc;
+      }
+
+      .dark-mode .tab:hover,
+      .dark-mode .tab.active {
+        background-color: var(--primary);
+        color: white;
+      }
+
+      /* Modal styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+      }
+
+      .modal-content {
+        background-color: white;
+        margin: 10% auto;
+        padding: 1.5rem;
+        border-radius: var(--radius);
+        width: 90%;
+        max-width: 600px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        position: relative;
+      }
+
+      .dark-mode .modal-content {
+        background-color: #2a2a2a;
+        color: #f5f5f5;
+      }
+
+      .close {
+        position: absolute;
+        right: 1rem;
+        top: 1rem;
+        font-size: 1.5rem;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      .modal-title {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        color: var(--primary);
+      }
+
+      /* Animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .fade-in {
+        animation: fadeIn 0.3s ease-in;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateY(20px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .slide-in {
+        animation: slideIn 0.4s ease-out;
+      }
+    </style>
+  </head>
+
+  <body class="fade-in">
+    <header>
+      <div class="container">
+        <div class="header-content">
+          <div class="app-title">
+            <i class="fas fa-check-double"></i>
+            <h1>Task Master</h1>
+          </div>
+          <div class="user-menu">
+            <button
+              id="darkModeToggle"
+              class="settings-btn"
+              title="Toggle Dark Mode"
+            >
+              <i class="fas fa-moon"></i>
+            </button>
+            <a href="/logout" class="logout-btn">
+              <i class="fas fa-sign-out-alt"></i>
+              Logout
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <!-- Stats Section -->
+      <div class="stats-row slide-in">
+        <div class="stat-card">
+          <div class="stat-value" id="totalTasks">{{ tasks|length }}</div>
+          <div class="stat-label">Total Tasks</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="completedTasks">
+            {{ tasks|selectattr('completed', 'eq', true)|list|length }}
+          </div>
+          <div class="stat-label">Completed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="pendingTasks">
+            {{ tasks|selectattr('completed', 'ne', true)|list|length }}
+          </div>
+          <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="overdueTasks">
+            {% set overdue = 0 %} {% for task in tasks %} {% if not
+            task.completed and task.due_date < current_date %} {% set overdue =
+            overdue + 1 %} {% endif %} {% endfor %} {{ overdue }}
+          </div>
+          <div class="stat-label">Overdue</div>
+        </div>
+      </div>
+
+      <!-- Add Task Section -->
+      <div class="card slide-in">
+        <h2 class="card-title">
+          <i class="fas fa-plus-circle"></i> Add New Task
+        </h2>
+        <form action="/add" method="POST" id="addTaskForm">
+          <div class="form-row">
+            <div class="form-group">
+              <input
+                type="text"
+                name="task"
+                id="taskInput"
+                class="form-control"
+                placeholder="What needs to be done?"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <select name="priority" class="form-control">
+                <option value="High">High Priority</option>
+                <option value="Medium" selected>Medium Priority</option>
+                <option value="Low">Low Priority</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <input
+                type="date"
+                name="due_date"
+                class="form-control"
+                required
+                min="{{ current_date }}"
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="text"
+                name="tags"
+                class="form-control"
+                placeholder="Tags (comma separated)"
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <textarea
+                name="description"
+                class="form-control"
+                placeholder="Add a description or notes (optional)"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-plus"></i> Add Task
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Task List Section -->
+      <div class="card slide-in">
+        <h2 class="card-title"><i class="fas fa-tasks"></i> My Tasks</h2>
+
+        <div class="search-box">
+          <i class="fas fa-search search-icon"></i>
+          <input type="text" id="searchInput" placeholder="Search tasks..." />
+        </div>
+
+        <div class="filter-tabs">
+          <a href="#" class="tab active" onclick="filterTasks('all', event)">
+            <i class="fas fa-list"></i> All
+          </a>
+          <a href="#" class="tab" onclick="filterTasks('pending', event)">
+            <i class="fas fa-hourglass-half"></i> Pending
+          </a>
+          <a href="#" class="tab" onclick="filterTasks('completed', event)">
+            <i class="fas fa-check"></i> Completed
+          </a>
+          <a href="#" class="tab" onclick="filterTasks('overdue', event)">
+            <i class="fas fa-exclamation-circle"></i> Overdue
+          </a>
+          <a href="#" class="tab" onclick="filterTasks('today', event)">
+            <i class="fas fa-calendar-day"></i> Today
+          </a>
+          <a href="#" class="tab" onclick="filterTasks('upcoming', event)">
+            <i class="fas fa-calendar-alt"></i> Upcoming
+          </a>
+        </div>
+
+        <div class="sort-controls">
+          <select id="sortTasks" class="form-control">
+            <option value="due_date">Sort by Due Date</option>
+            <option value="priority">Sort by Priority</option>
+            <option value="alpha">Sort Alphabetically</option>
+            <option value="created">Sort by Creation Date</option>
+          </select>
+        </div>
+
+        <ul class="task-list" id="taskList">
+          {% for task in tasks %}
+          <li
+            class="task-item slide-in"
+            data-priority="{{ task.priority|lower }}"
+            data-completed="{{ task.completed|lower }}"
+            data-id="{{ task._id }}"
+          >
+            <div
+              class="task-status {% if task.completed %}completed{% elif task.is_overdue %}overdue{% else %}pending{% endif %}"
+            ></div>
+            <div class="task-content">
+              <div class="task-header">
+                <h3 class="task-title">
+                  <span
+                    class="priority-badge priority-{{ task.priority|lower }}"
+                    >{{ task.priority }}</span
+                  >
+                  {{ task.task }}
+                </h3>
+                <div class="task-date">
+                  <i class="far fa-calendar-alt"></i>
+                  {{ task.due_date }} {% if task.is_overdue and not
+                  task.completed %}
+                  <span class="overdue-text">
+                    <i class="fas fa-exclamation-circle"></i> Overdue
+                  </span>
+                  {% endif %}
+                </div>
+              </div>
+
+              {% if task.tags %}
+              <div class="tags">
+                {% for tag in task.tags.split(',') %}
+                <span class="tag">{{ tag.strip() }}</span>
+                {% endfor %}
+              </div>
+              {% endif %} {% if task.description %}
+              <div class="task-description">{{ task.description }}</div>
+              {% endif %}
+
+              <div class="task-actions">
+                {% if not task.completed %}
+                <a
+                  href="#"
+                  class="btn btn-success btn-sm complete-btn"
+                  data-id="{{ task._id }}"
+                >
+                  <i class="fas fa-check"></i> Complete
+                </a>
+                {% else %}
+                <span class="completed-text">
+                  <i class="fas fa-check-circle"></i> Completed
+                </span>
+                {% endif %}
+
+                <button
+                  class="btn btn-warning btn-sm edit-btn"
+                  data-id="{{ task._id }}"
+                >
+                  <i class="fas fa-edit"></i> Edit
+                </button>
+
+                <a
+                  href="#"
+                  class="btn btn-danger btn-sm delete-btn"
+                  data-id="{{ task._id }}"
+                >
+                  <i class="fas fa-trash"></i> Delete
+                </a>
+              </div>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+
+        <div
+          id="emptyState"
+          class="{% if tasks|length > 0 %}d-none{% else %}d-block{% endif %}"
+        >
+          <div style="text-align: center; padding: 2rem">
+            <i
+              class="fas fa-clipboard-check"
+              style="font-size: 3rem; color: #ccc; margin-bottom: 1rem"
+            ></i>
+            <h3>No tasks found</h3>
+            <p>Add a new task to get started!</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Edit Task Modal -->
+    <div id="editTaskModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 class="modal-title">Edit Task</h2>
+        <form action="/update" method="POST" id="editTaskForm">
+          <input type="hidden" name="task_id" id="editTaskId" />
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="editTaskName">Task Name</label>
+              <input
+                type="text"
+                name="task"
+                id="editTaskName"
+                class="form-control"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="editPriority">Priority</label>
+              <select name="priority" id="editPriority" class="form-control">
+                <option value="High">High Priority</option>
+                <option value="Medium">Medium Priority</option>
+                <option value="Low">Low Priority</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="editDueDate">Due Date</label>
+              <input
+                type="date"
+                name="due_date"
+                id="editDueDate"
+                class="form-control"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="editTags">Tags (comma separated)</label>
+              <input
+                type="text"
+                name="tags"
+                id="editTags"
+                class="form-control"
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="editDescription">Description</label>
+              <textarea
+                name="description"
+                id="editDescription"
+                class="form-control"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i> Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // Current date for validation
+      const currentDate = new Date().toISOString().split("T")[0];
+      document.querySelectorAll('input[type="date"]').forEach((input) => {
+        input.setAttribute("min", currentDate);
+      });
+
+      // Dark mode toggle
+      const darkModeToggle = document.getElementById("darkModeToggle");
+      const body = document.body;
+
+      // Check for saved theme preference or respect OS theme setting
+      const savedTheme = localStorage.getItem("theme");
+      if (
+        savedTheme === "dark" ||
+        (!savedTheme &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches)
+      ) {
+        body.classList.add("dark-mode");
+        darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+      }
+
+      darkModeToggle.addEventListener("click", () => {
+        body.classList.toggle("dark-mode");
+        if (body.classList.contains("dark-mode")) {
+          localStorage.setItem("theme", "dark");
+          darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        } else {
+          localStorage.setItem("theme", "light");
+          darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        }
+      });
+
+      // Search functionality
+      const searchInput = document.getElementById("searchInput");
+      const taskList = document.getElementById("taskList");
+      const emptyState = document.getElementById("emptyState");
+
+      searchInput.addEventListener("input", filterTasks);
+
+      function filterTasks() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const tasks = taskList.querySelectorAll(".task-item");
+        let visibleTasks = 0;
+
+        tasks.forEach((task) => {
+          const taskTitle = task
+            .querySelector(".task-title")
+            .textContent.toLowerCase();
+          const taskDesc =
+            task
+              .querySelector(".task-description")
+              ?.textContent.toLowerCase() || "";
+          const taskTags =
+            task.querySelector(".tags")?.textContent.toLowerCase() || "";
+
+          if (
+            taskTitle.includes(searchTerm) ||
+            taskDesc.includes(searchTerm) ||
+            taskTags.includes(searchTerm)
+          ) {
+            task.style.display = "";
+            visibleTasks++;
+          } else {
+            task.style.display = "none";
+          }
+        });
+
+        emptyState.style.display = visibleTasks === 0 ? "block" : "none";
+      }
+
+      // Sort functionality
+      const sortSelect = document.getElementById("sortTasks");
+
+      sortSelect.addEventListener("change", () => {
+        const sortMethod = sortSelect.value;
+        const tasks = Array.from(taskList.querySelectorAll(".task-item"));
+
+        tasks.sort((a, b) => {
+          if (sortMethod === "priority") {
+            const priorityOrder = { high: 0, medium: 1, low: 2 };
+            return (
+              priorityOrder[a.dataset.priority] -
+              priorityOrder[b.dataset.priority]
+            );
+          } else if (sortMethod === "alpha") {
+            const textA = a
+              .querySelector(".task-title")
+              .textContent.toLowerCase();
+            const textB = b
+              .querySelector(".task-title")
+              .textContent.toLowerCase();
+            return textA.localeCompare(textB);
+          } else if (sortMethod === "due_date") {
+            const dateA = a.querySelector(".task-date").textContent.trim();
+            const dateB = b.querySelector(".task-date").textContent.trim();
+            return new Date(dateA) - new Date(dateB);
+          }
+          // Default sorting (created date) - would need IDs with timestamps for true implementation
+        });
+
+        tasks.forEach((task) => {
+          taskList.appendChild(task);
+        });
+      });
+
+      // Modal functionality
+      const modal = document.getElementById("editTaskModal");
+      const closeBtn = document.querySelector(".close");
+
+      function openEditModal(taskId) {
+        modal.style.display = "block";
+        document.getElementById("editTaskId").value = taskId;
+
+        // In a real implementation, you would fetch the task data via AJAX
+        // and populate the form. This is a simplified example.
+        const taskItem = document.querySelector(`[data-task-id="${taskId}"]`);
+        if (taskItem) {
+          document.getElementById("editTaskName").value = taskItem
+            .querySelector(".task-title")
+            .textContent.trim();
+          document.getElementById("editPriority").value =
+            taskItem.dataset.priority.charAt(0).toUpperCase() +
+            taskItem.dataset.priority.slice(1);
+          document.getElementById("editDueDate").value = taskItem
+            .querySelector(".task-date")
+            .textContent.trim();
+          document.getElementById("editDescription").value =
+            taskItem.querySelector(".task-description")?.textContent.trim() ||
+            "";
+          document.getElementById("editTags").value = Array.from(
+            taskItem.querySelectorAll(".tag")
+          )
+            .map((tag) => tag.textContent.trim())
+            .join(", ");
+        }
+      }
+
+      closeBtn.onclick = function () {
+        modal.style.display = "none";
+      };
+
+      window.onclick = function (event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      };
+
+      // Add animation to newly added tasks
+      document
+        .getElementById("addTaskForm")
+        .addEventListener("submit", function () {
+          localStorage.setItem("newTaskAdded", "true");
+        });
+
+      // Check if we need to highlight a new task
+      if (localStorage.getItem("newTaskAdded") === "true") {
+        const firstTask = document.querySelector(".task-item");
+        if (firstTask) {
+          firstTask.classList.add("highlight-new");
+          setTimeout(() => {
+            firstTask.classList.remove("highlight-new");
+          }, 3000);
+        }
+        localStorage.removeItem("newTaskAdded");
+      }
+
+      // Handle Complete button click
+      document.querySelectorAll(".complete-btn").forEach((button) => {
+        button.addEventListener("click", function (event) {
+          event.preventDefault();
+          const taskId = this.getAttribute("data-id");
+          // Perform AJAX request to complete the task
+          fetch(`/complete/${taskId}`, { method: "POST" })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.success) {
+                location.reload();
+              }
+            });
+        });
+      });
+
+      // Handle Edit button click
+      document.querySelectorAll(".edit-btn").forEach((button) => {
+        button.addEventListener("click", function () {
+          const taskId = this.getAttribute("data-id");
+          openEditModal(taskId);
+        });
+      });
+
+      // Handle Delete button click
+      document.querySelectorAll(".delete-btn").forEach((button) => {
+        button.addEventListener("click", function (event) {
+          event.preventDefault();
+          const taskId = this.getAttribute("data-id");
+          if (confirm("Are you sure you want to delete this task?")) {
+            // Perform AJAX request to delete the task
+            fetch(`/delete/${taskId}`, { method: "DELETE" })
+              .then((response) => response.json())
+              .then((data) => {
+                if (data.success) {
+                  location.reload();
+                }
+              });
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
+<script>
+  function filterTasks(filterType, event) {
+    const tasks = document.querySelectorAll(".task-item");
+    const currentDate = new Date().toISOString().split("T")[0]; // Get today's date
+
+    tasks.forEach((task) => {
+      const isCompleted = task.dataset.completed === "true";
+      const dueDate = task.querySelector(".task-date")?.textContent.trim();
+      const taskDate = new Date(dueDate).toISOString().split("T")[0];
+
+      let showTask = false;
+
+      if (filterType === "all") {
+        showTask = true;
+      } else if (filterType === "completed" && isCompleted) {
+        showTask = true;
+      } else if (filterType === "pending" && !isCompleted) {
+        showTask = true;
+      } else if (
+        filterType === "overdue" &&
+        !isCompleted &&
+        taskDate < currentDate
+      ) {
+        showTask = true;
+      } else if (filterType === "today" && taskDate === currentDate) {
+        showTask = true;
+      } else if (filterType === "upcoming" && taskDate > currentDate) {
+        showTask = true;
+      }
+
+      task.style.display = showTask ? "" : "none";
+    });
+
+    // Highlight active tab
+    document
+      .querySelectorAll(".tab")
+      .forEach((tab) => tab.classList.remove("active"));
+    event.target.classList.add("active");
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    // Get filter buttons
+    const allTasks = document.querySelectorAll(".task-item");
+    const completedBtn = document.querySelector(
+      ".tab[data-filter='completed']"
+    );
+    const pendingBtn = document.querySelector(".tab[data-filter='pending']");
+    const allBtn = document.querySelector(".tab[data-filter='all']");
+
+    function filterTasks(filterType) {
+      allTasks.forEach((task) => {
+        const isCompleted = task.dataset.completed === "true";
+        if (
+          (filterType === "completed" && isCompleted) ||
+          (filterType === "pending" && !isCompleted) ||
+          filterType === "all"
+        ) {
+          task.style.display = "";
+        } else {
+          task.style.display = "none";
+        }
+      });
+    }
+
+    // Event Listeners for Buttons
+    completedBtn.addEventListener("click", function () {
+      filterTasks("completed");
+    });
+
+    pendingBtn.addEventListener("click", function () {
+      filterTasks("pending");
+    });
+
+    allBtn.addEventListener("click", function () {
+      filterTasks("all");
+    });
+  });
+</script>
